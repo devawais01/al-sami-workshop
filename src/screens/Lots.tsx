@@ -55,7 +55,7 @@ export default function Lots() {
             <li key={l.id} className="rounded-2xl border border-line bg-surface p-4">
               <div className="flex items-baseline justify-between gap-3">
                 <p className="min-w-0 truncate font-semibold text-ink">
-                  {l.title}
+                  {l.dress_name}
                 </p>
                 {l.pending > 0 && (
                   <span className="nums shrink-0 rounded-full bg-brass-soft px-2 py-0.5 text-xs font-semibold text-brass">
