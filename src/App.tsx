@@ -1,26 +1,21 @@
-import { useEffect, useState } from 'react'
+import { useAuth } from './lib/useAuth'
 import { supabase } from './lib/supabase'
+import { t } from './lib/strings'
+import Login from './screens/Login'
+import Workers from './screens/Workers'
 
 export default function App() {
-  const [status, setStatus] = useState('Checking...')
+  const { session, loading } = useAuth()
 
-  useEffect(() => {
-    supabase
-      .from('workshop')
-      .select('name')
-      .then(({ data, error }) => {
-        if (error) setStatus('Error: ' + error.message)
-        else if (!data?.length) setStatus('Connected. 0 rows (RLS working — not logged in)')
-        else setStatus('Connected. Found: ' + data[0].name)
-      })
-  }, [])
-
-  return (
-    <div className="min-h-screen bg-chalk flex items-center justify-center p-6">
-      <div className="rounded-xl border border-line bg-surface p-6 max-w-md">
-        <h1 className="font-display text-2xl text-indigo">Karigar Book</h1>
-        <p className="mt-2 text-sm text-muted">{status}</p>
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-chalk flex items-center justify-center">
+        <p className="text-muted">{t.common.loading}</p>
       </div>
-    </div>
-  )
+    )
+  }
+
+  if (!session) return <Login />
+
+  return <Workers />
 }
