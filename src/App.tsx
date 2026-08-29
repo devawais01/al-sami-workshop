@@ -1,8 +1,19 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { useAuth } from './lib/useAuth'
-import { supabase } from './lib/supabase'
 import { t } from './lib/strings'
 import Login from './screens/Login'
 import Workers from './screens/Workers'
+import Lots from './screens/Lots'
+import Nav from './components/Nav'
+
+function Report() {
+  return (
+    <div className="min-h-screen bg-chalk p-5 pb-24">
+      <h1 className="font-display text-2xl text-indigo">{t.nav.report}</h1>
+      <p className="mt-2 text-sm text-muted">Ye hissa abhi banaya nahi gaya.</p>
+    </div>
+  )
+}
 
 export default function App() {
   const { session, loading } = useAuth()
@@ -17,5 +28,14 @@ export default function App() {
 
   if (!session) return <Login />
 
-  return <Workers />
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Workers />} />
+        <Route path="/lot" element={<Lots />} />
+        <Route path="/hisaab" element={<Report />} />
+      </Routes>
+      <Nav />
+    </BrowserRouter>
+  )
 }
