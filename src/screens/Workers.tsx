@@ -62,7 +62,7 @@ export default function Workers() {
       <button
         onClick={() => setAdding(true)}
         aria-label={t.worker.add}
-        className="fixed bottom-6 right-6 z-20 grid h-14 w-14 place-items-center rounded-full bg-indigo text-white shadow-lg"
+        className="fixed bottom-24 right-6 z-20 grid h-14 w-14 place-items-center rounded-full bg-indigo text-white shadow-lg"
       >
         <Plus size={26} />
       </button>

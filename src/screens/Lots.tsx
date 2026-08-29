@@ -45,25 +45,40 @@ export default function Lots() {
       <ul className="space-y-3 p-5">
         {shown.map((l) => {
           const pct = l.issued > 0 ? Math.round((l.returned / l.issued) * 100) : 0
+          const stats = [
+            { label: t.lot.total, value: l.total_pieces },
+            { label: t.lot.store, value: l.store },
+            { label: t.lot.issued, value: l.issued },
+            { label: t.lot.returned, value: l.returned },
+          ]
           return (
             <li key={l.id} className="rounded-2xl border border-line bg-surface p-4">
-              <div className="flex items-baseline justify-between">
-                <p className="nums font-semibold text-ink">Lot {l.lot_number}</p>
+              <div className="flex items-baseline justify-between gap-3">
+                <p className="min-w-0 truncate font-semibold text-ink">
+                  {l.title ?? `Lot ${l.lot_number}`}
+                </p>
                 {l.pending > 0 && (
-                  <span className="nums rounded-full bg-brass-soft px-2 py-0.5 text-xs font-semibold text-brass">
+                  <span className="nums shrink-0 rounded-full bg-brass-soft px-2 py-0.5 text-xs font-semibold text-brass">
                     {l.pending} {t.lot.pending.toLowerCase()}
                   </span>
                 )}
               </div>
-              {l.title && <p className="mt-0.5 text-sm text-muted">{l.title}</p>}
+              <p className="nums mt-0.5 text-sm text-muted">Lot {l.lot_number}</p>
 
               <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-chalk">
                 <div className="h-full bg-sabz" style={{ width: `${pct}%` }} />
               </div>
 
-              <p className="nums mt-2 text-xs text-muted">
-                {t.lot.issued} {l.issued} · {t.lot.returned} {l.returned}
-              </p>
+              <div className="mt-3 grid grid-cols-4 gap-2">
+                {stats.map((s) => (
+                  <div key={s.label}>
+                    <p className="text-[11px] text-muted">{s.label}</p>
+                    <p className="nums text-base font-semibold text-ink">
+                      {s.value ?? '—'}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </li>
           )
         })}

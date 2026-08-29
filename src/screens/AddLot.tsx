@@ -54,7 +54,10 @@ export default function AddLot({ workshopId, onClose }: Props) {
 
       <div className="flex-1 overflow-y-auto p-5">
         <div className="rounded-2xl border border-line bg-surface p-5">
-          <label className="block text-sm font-medium text-ink">
+          <label className="block text-sm font-medium text-ink">{t.lot.lotName}</label>
+          <input value={title} onChange={(e) => setTitle(e.target.value)} className={field} />
+
+          <label className="mt-4 block text-sm font-medium text-ink">
             {t.lot.number}{' '}
             <span className="font-normal text-brass">{t.lot.required}</span>
           </label>
@@ -63,9 +66,6 @@ export default function AddLot({ workshopId, onClose }: Props) {
             onChange={(e) => setNumber(e.target.value)}
             className={`${field} nums`}
           />
-
-          <label className="mt-4 block text-sm font-medium text-ink">{t.lot.lotName}</label>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} className={field} />
 
           <label className="mt-4 block text-sm font-medium text-ink">{t.lot.totalPieces}</label>
           <input
