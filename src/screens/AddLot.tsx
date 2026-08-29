@@ -13,7 +13,7 @@ export default function AddLot({ workshopId, onClose }: Props) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
 
-  const canSave = number.trim() !== ''
+  const canSave = number.trim() !== '' && title.trim() !== ''
 
   async function save() {
     setBusy(true)
@@ -21,12 +21,12 @@ export default function AddLot({ workshopId, onClose }: Props) {
     const { error } = await supabase.from('lot').insert({
       workshop_id: workshopId,
       lot_number: number.trim(),
-      title: title.trim() || null,
+      title: title.trim(),
       total_pieces: total.trim() ? Number(total) : null,
     })
     setBusy(false)
     if (error) {
-      setError(error.code === '23505' ? t.lot.duplicate : error.message)
+      setError(error.code === '23505' ? t.lot.duplicateDress : error.message)
       return
     }
     qc.invalidateQueries({ queryKey: ['lots'] })
@@ -54,7 +54,10 @@ export default function AddLot({ workshopId, onClose }: Props) {
 
       <div className="flex-1 overflow-y-auto p-5">
         <div className="rounded-2xl border border-line bg-surface p-5">
-          <label className="block text-sm font-medium text-ink">{t.lot.lotName}</label>
+          <label className="block text-sm font-medium text-ink">
+            {t.lot.lotName}{' '}
+            <span className="font-normal text-brass">{t.lot.required}</span>
+          </label>
           <input value={title} onChange={(e) => setTitle(e.target.value)} className={field} />
 
           <label className="mt-4 block text-sm font-medium text-ink">
