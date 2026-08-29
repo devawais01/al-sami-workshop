@@ -1,9 +1,40 @@
 @import "tailwindcss";
 
 @theme {
-  --color-issue: #128C7E;
-  --color-issue-bg: #DCF8C6;
-  --color-return: #1E6FD9;
-  --color-return-bg: #EAF2FF;
-  --color-chat-bg: #ECE5DD;
+  /* Ground — tailor's chalk, cool not cream */
+  --color-chalk: #EEF0F3;
+  --color-surface: #FFFFFF;
+  --color-line: #DDE1E7;
+
+  /* Text */
+  --color-ink: #16181D;
+  --color-muted: #6E7480;
+
+  /* Diye — dresses going out. Indigo dye. */
+  --color-indigo: #263A6B;
+  --color-indigo-soft: #E6EAF4;
+
+  /* Wapis — dresses coming back */
+  --color-sabz: #1F6B4D;
+  --color-sabz-soft: #E3F0EA;
+
+  /* Baqaya — pending. Brass. The only colour that shouts. */
+  --color-brass: #A87A2C;
+  --color-brass-soft: #F7EEDC;
+
+  /* Type */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+}
+
+body {
+  background-color: var(--color-chalk);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Quantities line up in columns instead of wobbling */
+.nums {
+  font-variant-numeric: tabular-nums;
 }
