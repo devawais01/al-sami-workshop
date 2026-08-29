@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+@theme {
+  --color-issue: #128C7E;
+  --color-issue-bg: #DCF8C6;
+  --color-return: #1E6FD9;
+  --color-return-bg: #EAF2FF;
+  --color-chat-bg: #ECE5DD;
+}
