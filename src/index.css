@@ -1,8 +1,7 @@
 @import "tailwindcss";
 
-/* Al-Sami Creations — monochrome with a single gold accent.
-   NOTE: --color-indigo now holds charcoal. Name kept deliberately:
-   renaming means touching ~50 class names across 10 files. */
+/* Al-Sami Creations. NOTE: --color-indigo holds charcoal.
+   Name kept deliberately — renaming touches ~50 classes across 10 files. */
 
 @theme {
   --color-chalk: #F5F4F1;
@@ -12,15 +11,18 @@
   --color-ink: #1A1817;
   --color-muted: #736E68;
 
-  /* Diye — going out */
   --color-indigo: #262322;
   --color-indigo-soft: #EDEAE6;
 
-  /* Wapis — coming back */
+  /* Diye — gone out, not yet back */
+  --color-out: #A0442F;
+  --color-out-soft: #FAEDE9;
+
+  /* Wapis — returned */
   --color-sabz: #1E5F45;
   --color-sabz-soft: #E5EFE9;
 
-  /* Baqaya — the one colour that shouts. Brand gold, darkened to be readable. */
+  /* Baqaya badge — brand gold, darkened for readability */
   --color-brass: #96742C;
   --color-brass-soft: #F7EFDB;
 
