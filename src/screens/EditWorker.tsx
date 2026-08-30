@@ -6,7 +6,6 @@ import { supabase } from '../lib/supabase'
 import { useWorker } from '../lib/useWorkers'
 import { useWorkshop } from '../lib/useWorkshop'
 import PhotoPicker from '../components/PhotoPicker'
-import Photo from '../components/Photo'
 import { t } from '../lib/strings'
 
 export default function EditWorker() {
@@ -22,7 +21,6 @@ export default function EditWorker() {
   const [address, setAddress] = useState('')
   const [notes, setNotes] = useState('')
   const [photoPath, setPhotoPath] = useState<string | null>(null)
-  const [changing, setChanging] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
 
@@ -50,12 +48,16 @@ export default function EditWorker() {
       photo_path: photoPath,
     }).eq('id', id!)
     setBusy(false)
-    if (error) { setError(error.message); return }
+    if (error) {
+      setError(error.message)
+      return
+    }
     qc.invalidateQueries({ queryKey: ['worker', id] })
     qc.invalidateQueries({ queryKey: ['workers'] })
     nav(-1)
   }
-    const field = 'mt-1 w-full rounded-lg border border-line bg-chalk px-3 py-3 text-base outline-none focus:border-indigo'
+
+  const field = 'mt-1 w-full rounded-lg border border-line bg-chalk px-3 py-3 text-base outline-none focus:border-ink'
 
   return (
     <div className="min-h-screen bg-chalk pb-10">
@@ -67,12 +69,8 @@ export default function EditWorker() {
       <div className="p-5">
         <div className="rounded-2xl border border-line bg-surface p-5">
           <div className="mb-5 flex flex-col items-center gap-2">
-            {changing ? (
-              <PhotoPicker bucket="worker-photos" workshopId={workshop?.id ?? ''} onUploaded={(p) => { setPhotoPath(p); setChanging(false) }} />
-            ) : (
-              <Photo bucket="worker-photos" path={photoPath} name={name} id={id ?? ''} size={88} />
-            )}
-            <button onClick={() => setChanging(true)} className="text-sm font-medium text-indigo">{t.edit.changePhoto}</button>
+            <PhotoPicker bucket="worker-photos" workshopId={workshop?.id ?? ''} onUploaded={setPhotoPath} current={photoPath} size={96} />
+            <p className="text-xs text-muted">{t.edit.changePhoto}</p>
           </div>
 
           <label className="block text-sm font-medium text-ink">{t.worker.name}</label>
@@ -94,7 +92,7 @@ export default function EditWorker() {
           <button onClick={() => nav(-1)} className="mt-2 w-full py-2.5 text-sm font-medium text-muted">{t.edit.back}</button>
         </div>
 
-        {error && <p className="mt-3 text-sm text-brass">{error}</p>}
+        {error && <p className="mt-3 text-sm text-out">{error}</p>}
       </div>
     </div>
   )

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus } from 'lucide-react'
+import { Plus, Search } from 'lucide-react'
 import { useWorkshop } from '../lib/useWorkshop'
 import { useLots } from '../lib/useLots'
 import { t } from '../lib/strings'
@@ -13,13 +13,38 @@ export default function Lots() {
   const [tab, setTab] = useState<'chalu' | 'band'>('chalu')
   const [adding, setAdding] = useState(false)
 
-  const shown = lots?.filter((l) => l.status === tab) ?? []
+  const [q, setQ] = useState('')
+  const term = q.trim().toLowerCase()
+
+  const shown = (lots ?? [])
+    .filter((l) => l.status === tab)
+    .filter(
+      (l) =>
+        !term ||
+        l.dress_name.toLowerCase().includes(term) ||
+        l.lot_number.toLowerCase().includes(term)
+    )
 
   return (
     <div className="min-h-screen bg-chalk pb-24">
       <header className="sticky top-0 z-10 border-b border-line bg-surface px-5 pt-4">
         <div>
           <h1 className="font-display text-2xl text-ink">{t.lot.title}</h1>
+
+          <div className="relative mt-3">
+            <Search
+              size={16}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted"
+            />
+
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder={t.lot.search}
+              className="w-full rounded-lg border border-line bg-chalk py-2.5 pl-9 pr-3 text-base outline-none focus:border-ink placeholder:text-muted/60"
+            />
+          </div>
+
           <div className="mt-3 flex gap-6">
             {(['chalu', 'band'] as const).map((k) => (
               <button
@@ -104,6 +129,7 @@ export default function Lots() {
                     className="bg-sabz"
                     style={{ width: `${pct(l.returned)}%` }}
                   />
+
                   <div
                     className="bg-out"
                     style={{ width: `${pct(l.pending)}%` }}
@@ -114,6 +140,7 @@ export default function Lots() {
                   {stats.map((s) => (
                     <div key={s.label}>
                       <p className="text-[11px] text-muted">{s.label}</p>
+
                       <p className="nums text-base font-semibold text-ink">
                         {s.value ?? '—'}
                       </p>

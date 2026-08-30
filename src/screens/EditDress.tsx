@@ -7,17 +7,29 @@ import { useDress } from '../lib/useDresses'
 import { useWorkshop } from '../lib/useWorkshop'
 import { useLots } from '../lib/useLots'
 import PhotoPicker from '../components/PhotoPicker'
-import Photo from '../components/Photo'
 import { t } from '../lib/strings'
 
-function LotRow({ lot }: { lot: { id: string; lot_number: string; total_pieces: number | null; issued: number; returned: number; pending: number } }) {
+type LotLite = {
+  id: string
+  lot_number: string
+  total_pieces: number | null
+  issued: number
+  returned: number
+  pending: number
+}
+
+function LotRow({ lot }: { lot: LotLite }) {
   const qc = useQueryClient()
   const [total, setTotal] = useState(String(lot.total_pieces ?? ''))
   const [err, setErr] = useState('')
 
   async function commit() {
     const n = total.trim() === '' ? null : Number(total)
-    if (n !== null && n < lot.issued) { setErr(t.dress.minTotal); setTotal(String(lot.total_pieces ?? '')); return }
+    if (n !== null && n < lot.issued) {
+      setErr(t.dress.minTotal)
+      setTotal(String(lot.total_pieces ?? ''))
+      return
+    }
     setErr('')
     if (n === lot.total_pieces) return
     await supabase.from('lot').update({ total_pieces: n }).eq('id', lot.id)
@@ -30,11 +42,11 @@ function LotRow({ lot }: { lot: { id: string; lot_number: string; total_pieces: 
         <span className="nums text-sm font-medium text-ink">Lot {lot.lot_number}</span>
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted">{t.lot.total}</span>
-          <input value={total} onChange={(e) => setTotal(e.target.value.replace(/\D/g, ''))} onBlur={commit} inputMode="numeric" className="nums w-16 rounded border border-line bg-surface px-2 py-1 text-center text-sm outline-none focus:border-indigo" />
+          <input value={total} onChange={(e) => setTotal(e.target.value.replace(/\D/g, ''))} onBlur={commit} inputMode="numeric" className="nums w-16 rounded border border-line bg-surface px-2 py-1 text-center text-sm outline-none focus:border-ink" />
         </div>
       </div>
       <p className="nums mt-1 text-xs text-muted">{t.lot.issued} {lot.issued} · {t.lot.returned} {lot.returned} · <span className="font-semibold text-brass">{t.lot.pending} {lot.pending}</span></p>
-      {err && <p className="mt-1 text-xs text-brass">{err}</p>}
+      {err && <p className="mt-1 text-xs text-out">{err}</p>}
     </li>
   )
 }
@@ -50,7 +62,6 @@ export default function EditDress() {
   const [name, setName] = useState('')
   const [notes, setNotes] = useState('')
   const [photoPath, setPhotoPath] = useState<string | null>(null)
-  const [changing, setChanging] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
 
@@ -73,13 +84,17 @@ export default function EditDress() {
       photo_path: photoPath,
     }).eq('id', id!)
     setBusy(false)
-    if (error) { setError(error.code === '23505' ? t.dress.exists : error.message); return }
+    if (error) {
+      setError(error.code === '23505' ? t.dress.exists : error.message)
+      return
+    }
     qc.invalidateQueries({ queryKey: ['dress', id] })
     qc.invalidateQueries({ queryKey: ['dresses'] })
     qc.invalidateQueries({ queryKey: ['lots'] })
     nav(-1)
   }
-    const field = 'mt-1 w-full rounded-lg border border-line bg-chalk px-3 py-3 text-base outline-none focus:border-indigo'
+
+  const field = 'mt-1 w-full rounded-lg border border-line bg-chalk px-3 py-3 text-base outline-none focus:border-ink'
 
   return (
     <div className="min-h-screen bg-chalk pb-10">
@@ -91,12 +106,8 @@ export default function EditDress() {
       <div className="p-5">
         <div className="rounded-2xl border border-line bg-surface p-5">
           <div className="mb-5 flex flex-col items-center gap-2">
-            {changing ? (
-              <PhotoPicker bucket="design-photos" workshopId={workshop?.id ?? ''} onUploaded={(p) => { setPhotoPath(p); setChanging(false) }} />
-            ) : (
-              <Photo bucket="design-photos" path={photoPath} name={name} id={id ?? ''} size={96} rounded={false} />
-            )}
-            <button onClick={() => setChanging(true)} className="text-sm font-medium text-indigo">{t.edit.changePhoto}</button>
+            <PhotoPicker bucket="design-photos" workshopId={workshop?.id ?? ''} onUploaded={setPhotoPath} current={photoPath} rounded={false} size={104} />
+            <p className="text-xs text-muted">{t.edit.changePhoto}</p>
           </div>
 
           <label className="block text-sm font-medium text-ink">{t.dress.name}</label>
@@ -109,7 +120,7 @@ export default function EditDress() {
           <button onClick={() => nav(-1)} className="mt-2 w-full py-2.5 text-sm font-medium text-muted">{t.edit.back}</button>
         </div>
 
-        {error && <p className="mt-3 text-sm text-brass">{error}</p>}
+        {error && <p className="mt-3 text-sm text-out">{error}</p>}
 
         <div className="mt-4 rounded-2xl border border-line bg-surface p-5">
           <p className="text-sm font-medium text-ink">{t.dress.lotsOf}</p>
