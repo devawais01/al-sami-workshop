@@ -2,9 +2,9 @@ import { useRef, useState } from 'react'
 import { Camera } from 'lucide-react'
 import { uploadPhoto } from '../lib/photo'
 
-type Props = { bucket: string; workshopId: string; onUploaded: (path: string) => void; current?: string | null }
+type Props = { bucket: string; workshopId: string; onUploaded: (path: string) => void }
 
-export default function PhotoPicker({ bucket, workshopId, onUploaded, current }: Props) {
+export default function PhotoPicker({ bucket, workshopId, onUploaded }: Props) {
   const ref = useRef<HTMLInputElement>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
