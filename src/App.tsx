@@ -11,6 +11,7 @@ import Report from './screens/Report'
 import Lots from './screens/Lots'
 import Nav from './components/Nav'
 import { useLocation } from 'react-router-dom'
+import { Analytics } from '@vercel/analytics/react'
 
 
 
@@ -30,6 +31,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Shell />
+      <Analytics />
     </BrowserRouter>
   )
 }
