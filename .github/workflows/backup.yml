@@ -20,6 +20,13 @@ jobs:
         run: |
           STAMP=$(date +%Y-%m-%d)
           pg_dump "$DB_URL" --no-owner --no-acl -f "backup-$STAMP.sql"
+          SIZE=$(stat -c%s "backup-$STAMP.sql")
+          echo "Dump size: $SIZE bytes"
+          if [ "$SIZE" -lt 2000 ]; then
+            echo "Dump is suspiciously small — failing."
+            exit 1
+          fi
+          grep -q "CREATE TABLE public.worker" "backup-$STAMP.sql" || { echo "worker table missing"; exit 1; }
           gzip "backup-$STAMP.sql"
           ls -lh backup-*.sql.gz
 
