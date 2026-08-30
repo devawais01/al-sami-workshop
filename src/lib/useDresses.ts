@@ -22,3 +22,18 @@ export function useDresses(workshopId: string | undefined) {
     },
   })
 }
+export function useDress(id: string | undefined) {
+  return useQuery({
+    queryKey: ['dress', id],
+    enabled: !!id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('dress')
+        .select('id, name, photo_path, notes')
+        .eq('id', id!)
+        .single()
+      if (error) throw error
+      return data
+    },
+  })
+}

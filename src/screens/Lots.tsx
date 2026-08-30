@@ -5,6 +5,7 @@ import { useLots } from '../lib/useLots'
 import { t } from '../lib/strings'
 import AddLot from './AddLot'
 import Photo from '../components/Photo'
+import { Link } from 'react-router-dom'
 
 export default function Lots() {
   const { data: workshop } = useWorkshop()
@@ -53,7 +54,7 @@ export default function Lots() {
           ]
           return (
             <li key={l.id} className="flex gap-3 rounded-2xl border border-line bg-surface p-4">
-              <Photo bucket="design-photos" path={l.dress_photo} name={l.dress_name} id={l.dress_id} size={52} rounded={false} />
+              <Link to={`/dress/${l.dress_id}/edit`}><Photo bucket="design-photos" path={l.dress_photo} name={l.dress_name} id={l.dress_id} size={52} rounded={false} /></Link>
               <div className="min-w-0 flex-1">
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="min-w-0 truncate font-semibold text-ink">

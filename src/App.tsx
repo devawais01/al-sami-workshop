@@ -5,6 +5,8 @@ import Login from './screens/Login'
 import Workers from './screens/Workers'
 import WorkerChat from './screens/WorkerChat'
 import WorkerProfile from './screens/WorkerProfile'
+import EditWorker from './screens/EditWorker'
+import EditDress from './screens/EditDress'
 import Lots from './screens/Lots'
 import Nav from './components/Nav'
 import { useLocation } from 'react-router-dom'
@@ -40,7 +42,7 @@ export default function App() {
 
 function Shell() {
   const { pathname } = useLocation()
-  const hideNav = pathname.startsWith('/karigar/')
+  const hideNav = pathname.startsWith('/karigar/') || pathname.startsWith('/dress/')
 
   return (
     <>
@@ -48,6 +50,8 @@ function Shell() {
         <Route path="/" element={<Workers />} />
         <Route path="/karigar/:id" element={<WorkerChat />} />
         <Route path="/karigar/:id/profile" element={<WorkerProfile />} />
+        <Route path="/karigar/:id/edit" element={<EditWorker />} />
+        <Route path="/dress/:id/edit" element={<EditDress />} />
         <Route path="/lot" element={<Lots />} />
         <Route path="/hisaab" element={<Report />} />
       </Routes>

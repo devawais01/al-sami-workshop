@@ -34,6 +34,8 @@ export const t = {
   dress: {
     name: 'Dress Name',
     placeholder: 'Z 208',
+    edit: 'Dress ki Tabdeeli',
+    minTotal: 'Itne dress pehle hi diye ja chuke hain.',
     recent: 'Pehle se mojood',
     needName: 'Dress ka naam likhein.',
     exists: 'Ye dress pehle se mojood hai. Isi mein lot add hoga.',
@@ -93,6 +95,14 @@ export const t = {
     nothing: 'Abhi koi dress nahi hai iske paas.',
     details: 'Tafseel',
     noValue: '—',
+  },
+  edit: {
+    worker: 'Karigar ki Tabdeeli',
+    dress: 'Dress ki Tabdeeli',
+    changePhoto: 'Change Photo',
+    save: 'Save',
+    back: 'Back',
+    saved: 'Save ho gaya',
   },
   common: {
     loading: 'Ruk jayein...',

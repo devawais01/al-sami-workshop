@@ -1,9 +1,10 @@
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Phone, MessageCircle } from 'lucide-react'
+import { ArrowLeft, Phone, MessageCircle, Pencil } from 'lucide-react'
 import { useWorker } from '../lib/useWorkers'
 import { useEntries, useWorkerPending } from '../lib/useEntries'
 import { t } from '../lib/strings'
 import Photo from '../components/Photo'
+
 
 function waLink(phone: string) {
   const digits = phone.replace(/\D/g, '')
@@ -34,7 +35,8 @@ export default function WorkerProfile() {
         <button onClick={() => nav(-1)} className="text-muted">
           <ArrowLeft size={22} />
         </button>
-        <p className="font-medium text-ink">{t.profile.title}</p>
+        <p className="flex-1 font-medium text-ink">{t.profile.title}</p>
+        <button onClick={() => nav(`/karigar/${id}/edit`)} className="text-indigo"><Pencil size={20} /></button>
       </header>
 
       <div className="p-5">
