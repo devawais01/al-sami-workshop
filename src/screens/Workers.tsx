@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, LogOut, Search } from 'lucide-react'
+import { Plus, LogOut, Search, Users as UsersIcon } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useWorkshop } from '../lib/useWorkshop'
 import { useWorkers } from '../lib/useWorkers'
+import { useMyRole } from '../lib/useRole'
 import { t } from '../lib/strings'
 import AddWorker from './AddWorker'
 import Photo from '../components/Photo'
@@ -13,6 +14,7 @@ export default function Workers() {
   const { data: workers, isLoading, error } = useWorkers(workshop?.id)
   const [adding, setAdding] = useState(false)
   const [q, setQ] = useState('')
+  const { data: myRole, isLoading: roleLoading } = useMyRole()
 
   const term = q.trim().toLowerCase()
   const shown = term
@@ -41,6 +43,16 @@ export default function Workers() {
               {workshop?.name ?? ''}
             </p>
           </div>
+
+          {!roleLoading && myRole === 'admin' && (
+            <Link
+              to="/users"
+              aria-label={t.users.title}
+              className="rounded-lg p-2 text-muted hover:bg-chalk"
+            >
+              <UsersIcon size={20} />
+            </Link>
+          )}
 
           <button
             onClick={() => supabase.auth.signOut()}
