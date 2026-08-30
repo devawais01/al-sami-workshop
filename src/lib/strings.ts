@@ -35,6 +35,7 @@ export const t = {
     name: 'Dress Name',
     placeholder: 'Z 208',
     edit: 'Dress ki Tabdeeli',
+    lotsOf: 'Is dress ke lot',
     minTotal: 'Itne dress pehle hi diye ja chuke hain.',
     recent: 'Pehle se mojood',
     needName: 'Dress ka naam likhein.',
