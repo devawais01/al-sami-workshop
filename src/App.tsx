@@ -7,18 +7,12 @@ import WorkerChat from './screens/WorkerChat'
 import WorkerProfile from './screens/WorkerProfile'
 import EditWorker from './screens/EditWorker'
 import EditDress from './screens/EditDress'
+import Report from './screens/Report'
 import Lots from './screens/Lots'
 import Nav from './components/Nav'
 import { useLocation } from 'react-router-dom'
 
-function Report() {
-  return (
-    <div className="min-h-screen bg-chalk p-5 pb-24">
-      <h1 className="font-display text-2xl text-indigo">{t.nav.report}</h1>
-      <p className="mt-2 text-sm text-muted">Ye hissa abhi banaya nahi gaya.</p>
-    </div>
-  )
-}
+
 
 export default function App() {
   const { session, loading } = useAuth()

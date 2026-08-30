@@ -11,7 +11,7 @@ export const t = {
     wrongDetails: 'Email ya password ghalat hai.',
     logout: 'Logout',
   },
-    worker: {
+  worker: {
     title: 'Karigar',
     add: 'Naya Karigar',
     name: 'Name',
@@ -104,6 +104,22 @@ export const t = {
     save: 'Save',
     back: 'Back',
     saved: 'Save ho gaya',
+  },
+  report: {
+    title: 'Hisaab',
+    today: 'Aaj',
+    week1: '1 Hafta',
+    week2: '2 Hafte',
+    month1: '1 Mahina',
+    custom: 'Apni Tareekh',
+    from: 'Kis Tareekh Se',
+    to: 'Kis Tareekh Tak',
+    totalIssued: 'Total Diye',
+    totalReturned: 'Total Wapis',
+    byWorker: 'Karigar ke Hisaab Se',
+    byDress: 'Dress ke Hisaab Se',
+    empty: 'Is arse mein koi kaam nahi hua.',
+    share: 'WhatsApp Par Bhejein',
   },
   common: {
     loading: 'Ruk jayein...',
