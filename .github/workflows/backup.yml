@@ -15,12 +15,13 @@ jobs:
           curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/pgdg.gpg
           sudo apt-get update
           sudo apt-get install -y postgresql-client-17
-          pg_dump --version
+          echo "/usr/lib/postgresql/17/bin" >> $GITHUB_PATH
 
       - name: Dump database
         env:
           DB_URL: ${{ secrets.SUPABASE_DB_URL }}
         run: |
+          pg_dump --version
           STAMP=$(date +%Y-%m-%d)
           pg_dump "$DB_URL" --no-owner --no-acl -f "backup-$STAMP.sql"
           SIZE=$(stat -c%s "backup-$STAMP.sql")
