@@ -15,9 +15,14 @@ export default function Workers() {
 
   return (
     <div className="min-h-screen bg-chalk pb-24">
-      <header className="sticky top-0 z-10 border-b border-line bg-surface px-5 py-4">
-        <h1 className="font-display text-2xl text-indigo">{t.app.name}</h1>
-        <p className="text-xs text-muted">{workshop?.name ?? ''}</p>
+      <header className="sticky top-0 z-10 border-b border-line bg-surface px-5 py-3">
+        <div className="mx-auto flex max-w-lg items-center gap-3">
+          <img src="/icon-512.png" alt="" className="h-9 w-9 rounded-lg" />
+          <div>
+            <p className="font-display text-lg leading-tight text-ink">{t.app.name}</p>
+            <p className="text-xs text-muted">{workshop?.name ?? ''}</p>
+          </div>
+        </div>
       </header>
 
       {isLoading && <p className="p-5 text-sm text-muted">{t.common.loading}</p>}
@@ -26,7 +31,7 @@ export default function Workers() {
         <p className="p-5 text-sm text-muted">{t.worker.empty}</p>
       )}
 
-      <ul className="divide-y divide-line bg-surface">
+      <ul className="mx-auto max-w-lg divide-y divide-line bg-surface">
         {workers?.map((w) => (
           <li key={w.id}>
             <Link

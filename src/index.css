@@ -1,28 +1,29 @@
 @import "tailwindcss";
 
+/* Al-Sami Creations — monochrome with a single gold accent.
+   NOTE: --color-indigo now holds charcoal. Name kept deliberately:
+   renaming means touching ~50 class names across 10 files. */
+
 @theme {
-  /* Ground — tailor's chalk, cool not cream */
-  --color-chalk: #EEF0F3;
+  --color-chalk: #F5F4F1;
   --color-surface: #FFFFFF;
-  --color-line: #DDE1E7;
+  --color-line: #E3E0DB;
 
-  /* Text */
-  --color-ink: #16181D;
-  --color-muted: #6E7480;
+  --color-ink: #1A1817;
+  --color-muted: #736E68;
 
-  /* Diye — dresses going out. Indigo dye. */
-  --color-indigo: #263A6B;
-  --color-indigo-soft: #E6EAF4;
+  /* Diye — going out */
+  --color-indigo: #262322;
+  --color-indigo-soft: #EDEAE6;
 
-  /* Wapis — dresses coming back */
-  --color-sabz: #1F6B4D;
-  --color-sabz-soft: #E3F0EA;
+  /* Wapis — coming back */
+  --color-sabz: #1E5F45;
+  --color-sabz-soft: #E5EFE9;
 
-  /* Baqaya — pending. Brass. The only colour that shouts. */
-  --color-brass: #A87A2C;
-  --color-brass-soft: #F7EEDC;
+  /* Baqaya — the one colour that shouts. Brand gold, darkened to be readable. */
+  --color-brass: #96742C;
+  --color-brass-soft: #F7EFDB;
 
-  /* Type */
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Fraunces", ui-serif, Georgia, serif;
 }
@@ -34,7 +35,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Quantities line up in columns instead of wobbling */
 .nums {
   font-variant-numeric: tabular-nums;
 }

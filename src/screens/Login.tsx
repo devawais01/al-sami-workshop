@@ -19,10 +19,8 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-chalk flex items-center justify-center px-6">
       <div className="w-full max-w-sm">
-        <h1 className="font-display text-4xl text-indigo text-center">
-          {t.app.name}
-        </h1>
-        <p className="mt-1 text-center text-sm text-muted">{t.app.tagline}</p>
+        <img src="/logo-full.png" alt="Al Sami Creation's" className="mx-auto w-48" />
+        <p className="mt-4 text-center text-sm text-muted">{t.app.tagline}</p>
 
         <div className="mt-8 rounded-2xl border border-line bg-surface p-6">
           <label className="block text-sm font-medium text-ink">

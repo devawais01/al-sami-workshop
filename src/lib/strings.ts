@@ -1,7 +1,7 @@
 export const t = {
   app: {
-    name: 'Karigar Book',
-    tagline: 'Al-Sami Workshop',
+    name: "Al Sami Creation's",
+    tagline: 'Hisaab Book',
   },
   auth: {
     login: 'Login',
