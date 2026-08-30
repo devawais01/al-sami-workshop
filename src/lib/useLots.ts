@@ -5,6 +5,7 @@ export type Lot = {
   id: string
   dress_id: string
   dress_name: string
+  dress_photo: string | null
   lot_number: string
   status: 'chalu' | 'band'
   total_pieces: number | null
@@ -22,7 +23,7 @@ export function useLots(workshopId: string | undefined) {
       const { data, error } = await supabase
         .from('lot_summary')
         .select(
-          'lot_id, dress_id, dress_name, lot_number, status, total_pieces, issued, returned, pending',
+          'lot_id, dress_id, dress_name, dress_photo, lot_number, status, total_pieces, issued, returned, pending',
         )
         .eq('workshop_id', workshopId!)
         .order('dress_name')
@@ -31,6 +32,7 @@ export function useLots(workshopId: string | undefined) {
         id: l.lot_id,
         dress_id: l.dress_id,
         dress_name: l.dress_name,
+        dress_photo: l.dress_photo,
         lot_number: l.lot_number,
         status: l.status,
         total_pieces: l.total_pieces,

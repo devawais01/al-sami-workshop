@@ -3,8 +3,11 @@ import { useAuth } from './lib/useAuth'
 import { t } from './lib/strings'
 import Login from './screens/Login'
 import Workers from './screens/Workers'
+import WorkerChat from './screens/WorkerChat'
+import WorkerProfile from './screens/WorkerProfile'
 import Lots from './screens/Lots'
 import Nav from './components/Nav'
+import { useLocation } from 'react-router-dom'
 
 function Report() {
   return (
@@ -30,12 +33,25 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <Shell />
+    </BrowserRouter>
+  )
+}
+
+function Shell() {
+  const { pathname } = useLocation()
+  const hideNav = pathname.startsWith('/karigar/')
+
+  return (
+    <>
       <Routes>
         <Route path="/" element={<Workers />} />
+        <Route path="/karigar/:id" element={<WorkerChat />} />
+        <Route path="/karigar/:id/profile" element={<WorkerProfile />} />
         <Route path="/lot" element={<Lots />} />
         <Route path="/hisaab" element={<Report />} />
       </Routes>
-      <Nav />
-    </BrowserRouter>
+      {!hideNav && <Nav />}
+    </>
   )
 }

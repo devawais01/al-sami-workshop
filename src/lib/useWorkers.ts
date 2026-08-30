@@ -32,3 +32,19 @@ export function useWorkers(workshopId: string | undefined) {
     },
   })
 }
+
+export function useWorker(id: string | undefined) {
+  return useQuery({
+    queryKey: ['worker', id],
+    enabled: !!id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('worker')
+        .select('id, name, phone, photo_path, cnic, address, notes')
+        .eq('id', id!)
+        .single()
+      if (error) throw error
+      return data
+    },
+  })
+}

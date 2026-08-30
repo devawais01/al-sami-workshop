@@ -1,21 +1,12 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Plus } from 'lucide-react'
 import { useWorkshop } from '../lib/useWorkshop'
 import { useWorkers } from '../lib/useWorkers'
 import { t } from '../lib/strings'
 import AddWorker from './AddWorker'
+import Photo from '../components/Photo'
 
-const AVATAR_COLORS = ['#263A6B', '#1F6B4D', '#A87A2C', '#6E4B7A', '#2C6E7A']
-
-function initial(name: string) {
-  return name.trim().charAt(0).toUpperCase() || '?'
-}
-
-function colorFor(id: string) {
-  let sum = 0
-  for (const ch of id) sum += ch.charCodeAt(0)
-  return AVATAR_COLORS[sum % AVATAR_COLORS.length]
-}
 
 export default function Workers() {
   const { data: workshop } = useWorkshop()
@@ -37,13 +28,12 @@ export default function Workers() {
 
       <ul className="divide-y divide-line bg-surface">
         {workers?.map((w) => (
-          <li key={w.id} className="flex items-center gap-3 px-5 py-3">
-            <div
-              className="grid h-12 w-12 shrink-0 place-items-center rounded-full text-lg font-semibold text-white"
-              style={{ backgroundColor: colorFor(w.id) }}
+          <li key={w.id}>
+            <Link
+              to={`/karigar/${w.id}`}
+              className="flex items-center gap-3 px-5 py-3 active:bg-chalk"
             >
-              {initial(w.name)}
-            </div>
+            <Photo bucket="worker-photos" path={w.photo_path} name={w.name} id={w.id} size={48} />
 
             <div className="min-w-0 flex-1">
               <p className="truncate font-medium text-ink">{w.name}</p>
@@ -54,7 +44,8 @@ export default function Workers() {
               <span className="nums shrink-0 rounded-full bg-brass px-2.5 py-1 text-xs font-semibold text-white">
                 {w.pending}
               </span>
-            )}
+                         )}
+            </Link>
           </li>
         ))}
       </ul>

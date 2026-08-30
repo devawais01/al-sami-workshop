@@ -4,6 +4,7 @@ import { useWorkshop } from '../lib/useWorkshop'
 import { useLots } from '../lib/useLots'
 import { t } from '../lib/strings'
 import AddLot from './AddLot'
+import Photo from '../components/Photo'
 
 export default function Lots() {
   const { data: workshop } = useWorkshop()
@@ -22,11 +23,10 @@ export default function Lots() {
             <button
               key={k}
               onClick={() => setTab(k)}
-              className={`border-b-2 pb-2 text-sm font-medium ${
-                tab === k
-                  ? 'border-indigo text-indigo'
-                  : 'border-transparent text-muted'
-              }`}
+              className={`border-b-2 pb-2 text-sm font-medium ${tab === k
+                ? 'border-indigo text-indigo'
+                : 'border-transparent text-muted'
+                }`}
             >
               {k === 'chalu' ? t.lot.active : t.lot.closed}
             </button>
@@ -52,32 +52,35 @@ export default function Lots() {
             { label: t.lot.returned, value: l.returned },
           ]
           return (
-            <li key={l.id} className="rounded-2xl border border-line bg-surface p-4">
-              <div className="flex items-baseline justify-between gap-3">
-                <p className="min-w-0 truncate font-semibold text-ink">
-                  {l.dress_name}
-                </p>
-                {l.pending > 0 && (
-                  <span className="nums shrink-0 rounded-full bg-brass-soft px-2 py-0.5 text-xs font-semibold text-brass">
-                    {l.pending} {t.lot.pending.toLowerCase()}
-                  </span>
-                )}
-              </div>
-              <p className="nums mt-0.5 text-sm text-muted">Lot {l.lot_number}</p>
+            <li key={l.id} className="flex gap-3 rounded-2xl border border-line bg-surface p-4">
+              <Photo bucket="design-photos" path={l.dress_photo} name={l.dress_name} id={l.dress_id} size={52} rounded={false} />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-baseline justify-between gap-3">
+                  <p className="min-w-0 truncate font-semibold text-ink">
+                    {l.dress_name}
+                  </p>
+                  {l.pending > 0 && (
+                    <span className="nums shrink-0 rounded-full bg-brass-soft px-2 py-0.5 text-xs font-semibold text-brass">
+                      {l.pending} {t.lot.pending.toLowerCase()}
+                    </span>
+                  )}
+                </div>
+                <p className="nums mt-0.5 text-sm text-muted">Lot {l.lot_number}</p>
 
-              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-chalk">
-                <div className="h-full bg-sabz" style={{ width: `${pct}%` }} />
-              </div>
+                <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-chalk">
+                  <div className="h-full bg-sabz" style={{ width: `${pct}%` }} />
+                </div>
 
-              <div className="mt-3 grid grid-cols-4 gap-2">
-                {stats.map((s) => (
-                  <div key={s.label}>
-                    <p className="text-[11px] text-muted">{s.label}</p>
-                    <p className="nums text-base font-semibold text-ink">
-                      {s.value ?? '—'}
-                    </p>
-                  </div>
-                ))}
+                <div className="mt-3 grid grid-cols-4 gap-2">
+                  {stats.map((s) => (
+                    <div key={s.label}>
+                      <p className="text-[11px] text-muted">{s.label}</p>
+                      <p className="nums text-base font-semibold text-ink">
+                        {s.value ?? '—'}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </li>
           )

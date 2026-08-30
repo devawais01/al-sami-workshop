@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
 import { useDresses } from '../lib/useDresses'
 import { t } from '../lib/strings'
+import PhotoPicker from '../components/PhotoPicker'
 
 type Props = { workshopId: string; onClose: () => void }
 
@@ -14,6 +15,7 @@ export default function AddLot({ workshopId, onClose }: Props) {
   const [dressName, setDressName] = useState('')
   const [number, setNumber] = useState('')
   const [total, setTotal] = useState('')
+  const [photoPath, setPhotoPath] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
 
@@ -31,11 +33,16 @@ export default function AddLot({ workshopId, onClose }: Props) {
       .ilike('name', name)
       .maybeSingle()
 
-    if (found) return found.id
+    if (found) {
+      if (photoPath) {
+        await supabase.from('dress').update({ photo_path: photoPath }).eq('id', found.id)
+      }
+      return found.id
+    }
 
     const { data, error } = await supabase
       .from('dress')
-      .insert({ workshop_id: workshopId, name })
+      .insert({ workshop_id: workshopId, name, photo_path: photoPath })
       .select('id')
       .single()
 
@@ -91,6 +98,9 @@ export default function AddLot({ workshopId, onClose }: Props) {
 
       <div className="flex-1 overflow-y-auto p-5">
         <div className="rounded-2xl border border-line bg-surface p-5">
+          <div className="mb-5">
+            <PhotoPicker bucket="design-photos" workshopId={workshopId} onUploaded={setPhotoPath} />
+          </div>
           {dresses && dresses.length > 0 && (
             <div className="mb-5">
               <p className="text-xs text-muted">{t.dress.recent}</p>
@@ -99,11 +109,10 @@ export default function AddLot({ workshopId, onClose }: Props) {
                   <button
                     key={d.id}
                     onClick={() => setDressName(d.name)}
-                    className={`rounded-full border px-3 py-1.5 text-sm ${
-                      norm(dressName) === norm(d.name)
+                    className={`rounded-full border px-3 py-1.5 text-sm ${norm(dressName) === norm(d.name)
                         ? 'border-indigo bg-indigo text-white'
                         : 'border-line bg-chalk text-ink'
-                    }`}
+                      }`}
                   >
                     {d.name}
                   </button>
