@@ -27,13 +27,16 @@ function LotRow({ lot, isAdmin }: { lot: LotLite; isAdmin: boolean }) {
 
   async function commit() {
     const n = total.trim() === '' ? null : Number(total)
+
     if (n !== null && n < lot.issued) {
       setErr(t.dress.minTotal)
       setTotal(String(lot.total_pieces ?? ''))
       return
     }
+
     setErr('')
     if (n === lot.total_pieces) return
+
     await supabase.from('lot').update({ total_pieces: n }).eq('id', lot.id)
     qc.invalidateQueries({ queryKey: ['lots'] })
   }
@@ -41,9 +44,13 @@ function LotRow({ lot, isAdmin }: { lot: LotLite; isAdmin: boolean }) {
   return (
     <li className="rounded-lg bg-chalk px-3 py-2.5">
       <div className="flex items-center justify-between gap-3">
-        <span className="nums text-sm font-medium text-ink">Lot {lot.lot_number}</span>
+        <span className="nums text-sm font-medium text-ink">
+          Lot {lot.lot_number}
+        </span>
+
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted">{t.lot.total}</span>
+
           <input
             value={total}
             onChange={(e) => setTotal(e.target.value.replace(/\D/g, ''))}
@@ -83,6 +90,7 @@ export default function EditDress() {
   const { id } = useParams()
   const nav = useNavigate()
   const qc = useQueryClient()
+
   const { data: workshop } = useWorkshop()
   const { data: d } = useDress(id)
   const { data: lots } = useLots(workshop?.id)
@@ -96,6 +104,7 @@ export default function EditDress() {
 
   useEffect(() => {
     if (!d) return
+
     setName(d.name ?? '')
     setNotes(d.notes ?? '')
     setPhotoPath(d.photo_path ?? null)
@@ -108,11 +117,14 @@ export default function EditDress() {
     setBusy(true)
     setError('')
 
-    const { error } = await supabase.from('dress').update({
-      name: name.trim(),
-      notes: notes.trim() || null,
-      photo_path: photoPath,
-    }).eq('id', id!)
+    const { error } = await supabase
+      .from('dress')
+      .update({
+        name: name.trim(),
+        notes: notes.trim() || null,
+        photo_path: photoPath,
+      })
+      .eq('id', id!)
 
     setBusy(false)
 
@@ -127,7 +139,8 @@ export default function EditDress() {
     nav(-1)
   }
 
-  const field = 'mt-1 w-full rounded-lg border border-line bg-chalk px-3 py-3 text-base outline-none focus:border-ink'
+  const field =
+    'mt-1 w-full rounded-lg border border-line bg-chalk px-3 py-3 text-base outline-none focus:border-ink'
 
   return (
     <div className="min-h-screen bg-chalk pb-10">
@@ -135,6 +148,7 @@ export default function EditDress() {
         <button onClick={() => nav(-1)} className="text-muted">
           <ArrowLeft size={22} />
         </button>
+
         <p className="font-medium text-ink">{t.dress.edit}</p>
       </header>
 
@@ -149,14 +163,30 @@ export default function EditDress() {
               rounded={false}
               size={104}
             />
+
             <p className="text-xs text-muted">{t.edit.changePhoto}</p>
           </div>
 
-          <label className="block text-sm font-medium text-ink">{t.dress.name}</label>
-          <input value={name} onChange={(e) => setName(e.target.value)} className={field} />
+          <label className="block text-sm font-medium text-ink">
+            {t.dress.name}
+          </label>
 
-          <label className="mt-4 block text-sm font-medium text-ink">{t.worker.notes}</label>
-          <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} className={field} />
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className={field}
+          />
+
+          <label className="mt-4 block text-sm font-medium text-ink">
+            {t.worker.notes}
+          </label>
+
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            rows={2}
+            className={field}
+          />
 
           <button
             onClick={save}
@@ -166,19 +196,43 @@ export default function EditDress() {
             {busy ? t.worker.saving : t.edit.save}
           </button>
 
-          <button onClick={() => nav(-1)} className="mt-2 w-full py-2.5 text-sm font-medium text-muted">
+          <button
+            onClick={() => nav(-1)}
+            className="mt-2 w-full py-2.5 text-sm font-medium text-muted"
+          >
             {t.edit.back}
           </button>
         </div>
 
         {error && <p className="mt-3 text-sm text-out">{error}</p>}
 
+        {myRole === 'admin' && (
+          <DeleteButton
+            label={t.del.dress}
+            confirm={t.del.confirmDress}
+            count={myLots.length}
+            onDelete={async () => {
+              const { error } = await supabase.from('dress').delete().eq('id', id!)
+
+              if (error) throw error
+
+              qc.invalidateQueries({ queryKey: ['lots'] })
+              qc.invalidateQueries({ queryKey: ['dresses'] })
+              nav('/lot')
+            }}
+          />
+        )}
+
         <div className="mt-4 rounded-2xl border border-line bg-surface p-5">
           <p className="text-sm font-medium text-ink">{t.dress.lotsOf}</p>
 
           <ul className="mt-3 space-y-2">
             {myLots.map((l) => (
-              <LotRow key={l.id} lot={l} isAdmin={myRole === 'admin'} />
+              <LotRow
+                key={l.id}
+                lot={l}
+                isAdmin={myRole === 'admin'}
+              />
             ))}
           </ul>
         </div>

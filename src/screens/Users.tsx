@@ -64,13 +64,31 @@ export default function Users() {
     qc.invalidateQueries({ queryKey: ['members'] })
   }
 
-  async function remove(id: string) {
+  async function remove(userId: string) {
     if (!confirm(t.users.removeConfirm)) return
 
-    await supabase
-      .from('workshop_member')
-      .delete()
-      .eq('id', id)
+    setErr('')
+
+    const { data: s } = await supabase.auth.getSession()
+
+    const res = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/add-user`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${s.session?.access_token}`,
+        },
+        body: JSON.stringify({ action: 'delete', user_id: userId }),
+      }
+    )
+
+    const body = await res.json()
+
+    if (!res.ok) {
+      setErr(body.error ?? 'Error')
+      return
+    }
 
     qc.invalidateQueries({ queryKey: ['members'] })
   }
@@ -200,7 +218,7 @@ export default function Users() {
 
                 {m.role !== 'admin' && (
                   <button
-                    onClick={() => remove(m.id)}
+                    onClick={() => remove(m.user_id)}
                     className="shrink-0 text-muted"
                   >
                     <Trash2 size={18} />

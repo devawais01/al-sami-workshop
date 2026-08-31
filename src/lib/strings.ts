@@ -139,9 +139,11 @@ export const t = {
     onlyAdmin: 'Sirf admin yahan aa sakta hai.',
   },
   del: {
-    worker: 'Karigar Delete Krein',
-    lot: 'Lot Delete Krein',
-    user: 'User Delete Krein',
+    worker: 'Delete',
+    lot: 'Delete',
+    dress: 'Delete',
+    confirmDress: 'Ye dress, uske saare lot aur poora record mit jayega. Pakka?',
+    user: 'Delete',
     confirmWorker: 'Ye karigar aur uska poora record delete ho jayega. Pakka?',
     confirmLot: 'Ye lot aur uska poora record delete ho jayega. Pakka?',
     warnEntries: 'record bhi delete ho jayenge.',
@@ -152,5 +154,6 @@ export const t = {
   common: {
     loading: 'Ruk jayein...',
     somethingWrong: 'Kuch masla ho gaya. Dobara koshish karein.',
+    noWorkshop: 'Aap kisi workshop mein shamil nahi hain. Admin se rabta karein.',
   },
 } as const
