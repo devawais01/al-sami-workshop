@@ -138,6 +138,17 @@ export const t = {
     removeConfirm: 'Is user ko hatana hai?',
     onlyAdmin: 'Sirf admin yahan aa sakta hai.',
   },
+  del: {
+    worker: 'Karigar Delete Krein',
+    lot: 'Lot Delete Krein',
+    user: 'User Delete Krein',
+    confirmWorker: 'Ye karigar aur uska poora record delete ho jayega. Pakka?',
+    confirmLot: 'Ye lot aur uska poora record delete ho jayega. Pakka?',
+    warnEntries: 'record bhi delete ho jayenge.',
+    yes: 'Haan, Delete krein',
+    onlyAdmin: 'Sirf admin delete kr sakta hai.',
+    deleting: 'Ruk jayein...',
+  },
   common: {
     loading: 'Ruk jayein...',
     somethingWrong: 'Kuch masla ho gaya. Dobara koshish karein.',

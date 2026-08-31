@@ -5,6 +5,9 @@ import { ArrowLeft } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useWorker } from '../lib/useWorkers'
 import { useWorkshop } from '../lib/useWorkshop'
+import { useMyRole } from '../lib/useRole'
+import { useEntries } from '../lib/useEntries'
+import DeleteButton from '../components/DeleteButton'
 import PhotoPicker from '../components/PhotoPicker'
 import { t } from '../lib/strings'
 
@@ -14,6 +17,8 @@ export default function EditWorker() {
   const qc = useQueryClient()
   const { data: workshop } = useWorkshop()
   const { data: w } = useWorker(id)
+  const { data: myRole } = useMyRole()
+  const { data: entries } = useEntries(id)
 
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -47,11 +52,14 @@ export default function EditWorker() {
       notes: notes.trim() || null,
       photo_path: photoPath,
     }).eq('id', id!)
+
     setBusy(false)
+
     if (error) {
       setError(error.message)
       return
     }
+
     qc.invalidateQueries({ queryKey: ['worker', id] })
     qc.invalidateQueries({ queryKey: ['workers'] })
     nav(-1)
@@ -62,14 +70,22 @@ export default function EditWorker() {
   return (
     <div className="min-h-screen bg-chalk pb-10">
       <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-line bg-surface px-4 py-3">
-        <button onClick={() => nav(-1)} className="text-muted"><ArrowLeft size={22} /></button>
+        <button onClick={() => nav(-1)} className="text-muted">
+          <ArrowLeft size={22} />
+        </button>
         <p className="font-medium text-ink">{t.edit.worker}</p>
       </header>
 
       <div className="p-5">
         <div className="rounded-2xl border border-line bg-surface p-5">
           <div className="mb-5 flex flex-col items-center gap-2">
-            <PhotoPicker bucket="worker-photos" workshopId={workshop?.id ?? ''} onUploaded={setPhotoPath} current={photoPath} size={96} />
+            <PhotoPicker
+              bucket="worker-photos"
+              workshopId={workshop?.id ?? ''}
+              onUploaded={setPhotoPath}
+              current={photoPath}
+              size={96}
+            />
             <p className="text-xs text-muted">{t.edit.changePhoto}</p>
           </div>
 
@@ -88,11 +104,34 @@ export default function EditWorker() {
           <label className="mt-4 block text-sm font-medium text-ink">{t.worker.notes}</label>
           <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} className={field} />
 
-          <button onClick={save} disabled={!canSave || busy} className="mt-6 w-full rounded-lg bg-indigo py-3 text-base font-semibold text-white disabled:opacity-30">{busy ? t.worker.saving : t.edit.save}</button>
-          <button onClick={() => nav(-1)} className="mt-2 w-full py-2.5 text-sm font-medium text-muted">{t.edit.back}</button>
+          <button
+            onClick={save}
+            disabled={!canSave || busy}
+            className="mt-6 w-full rounded-lg bg-indigo py-3 text-base font-semibold text-white disabled:opacity-30"
+          >
+            {busy ? t.worker.saving : t.edit.save}
+          </button>
+
+          <button onClick={() => nav(-1)} className="mt-2 w-full py-2.5 text-sm font-medium text-muted">
+            {t.edit.back}
+          </button>
         </div>
 
         {error && <p className="mt-3 text-sm text-out">{error}</p>}
+
+        {myRole === 'admin' && (
+          <DeleteButton
+            label={t.del.worker}
+            confirm={t.del.confirmWorker}
+            count={entries?.length}
+            onDelete={async () => {
+              const { error } = await supabase.from('worker').delete().eq('id', id!)
+              if (error) throw error
+              qc.invalidateQueries({ queryKey: ['workers'] })
+              nav('/')
+            }}
+          />
+        )}
       </div>
     </div>
   )

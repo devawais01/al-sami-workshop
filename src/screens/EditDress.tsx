@@ -6,6 +6,8 @@ import { supabase } from '../lib/supabase'
 import { useDress } from '../lib/useDresses'
 import { useWorkshop } from '../lib/useWorkshop'
 import { useLots } from '../lib/useLots'
+import { useMyRole } from '../lib/useRole'
+import DeleteButton from '../components/DeleteButton'
 import PhotoPicker from '../components/PhotoPicker'
 import { t } from '../lib/strings'
 
@@ -18,7 +20,7 @@ type LotLite = {
   pending: number
 }
 
-function LotRow({ lot }: { lot: LotLite }) {
+function LotRow({ lot, isAdmin }: { lot: LotLite; isAdmin: boolean }) {
   const qc = useQueryClient()
   const [total, setTotal] = useState(String(lot.total_pieces ?? ''))
   const [err, setErr] = useState('')
@@ -42,11 +44,37 @@ function LotRow({ lot }: { lot: LotLite }) {
         <span className="nums text-sm font-medium text-ink">Lot {lot.lot_number}</span>
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted">{t.lot.total}</span>
-          <input value={total} onChange={(e) => setTotal(e.target.value.replace(/\D/g, ''))} onBlur={commit} inputMode="numeric" className="nums w-16 rounded border border-line bg-surface px-2 py-1 text-center text-sm outline-none focus:border-ink" />
+          <input
+            value={total}
+            onChange={(e) => setTotal(e.target.value.replace(/\D/g, ''))}
+            onBlur={commit}
+            inputMode="numeric"
+            className="nums w-16 rounded border border-line bg-surface px-2 py-1 text-center text-sm outline-none focus:border-ink"
+          />
         </div>
       </div>
-      <p className="nums mt-1 text-xs text-muted">{t.lot.issued} {lot.issued} · {t.lot.returned} {lot.returned} · <span className="font-semibold text-brass">{t.lot.pending} {lot.pending}</span></p>
+
+      <p className="nums mt-1 text-xs text-muted">
+        {t.lot.issued} {lot.issued} · {t.lot.returned} {lot.returned} ·{' '}
+        <span className="font-semibold text-brass">
+          {t.lot.pending} {lot.pending}
+        </span>
+      </p>
+
       {err && <p className="mt-1 text-xs text-out">{err}</p>}
+
+      {isAdmin && (
+        <DeleteButton
+          label={t.del.lot}
+          confirm={t.del.confirmLot}
+          count={lot.issued + lot.returned}
+          onDelete={async () => {
+            const { error } = await supabase.from('lot').delete().eq('id', lot.id)
+            if (error) throw error
+            qc.invalidateQueries({ queryKey: ['lots'] })
+          }}
+        />
+      )}
     </li>
   )
 }
@@ -58,6 +86,7 @@ export default function EditDress() {
   const { data: workshop } = useWorkshop()
   const { data: d } = useDress(id)
   const { data: lots } = useLots(workshop?.id)
+  const { data: myRole } = useMyRole()
 
   const [name, setName] = useState('')
   const [notes, setNotes] = useState('')
@@ -78,16 +107,20 @@ export default function EditDress() {
   async function save() {
     setBusy(true)
     setError('')
+
     const { error } = await supabase.from('dress').update({
       name: name.trim(),
       notes: notes.trim() || null,
       photo_path: photoPath,
     }).eq('id', id!)
+
     setBusy(false)
+
     if (error) {
       setError(error.code === '23505' ? t.dress.exists : error.message)
       return
     }
+
     qc.invalidateQueries({ queryKey: ['dress', id] })
     qc.invalidateQueries({ queryKey: ['dresses'] })
     qc.invalidateQueries({ queryKey: ['lots'] })
@@ -99,14 +132,23 @@ export default function EditDress() {
   return (
     <div className="min-h-screen bg-chalk pb-10">
       <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-line bg-surface px-4 py-3">
-        <button onClick={() => nav(-1)} className="text-muted"><ArrowLeft size={22} /></button>
+        <button onClick={() => nav(-1)} className="text-muted">
+          <ArrowLeft size={22} />
+        </button>
         <p className="font-medium text-ink">{t.dress.edit}</p>
       </header>
 
       <div className="p-5">
         <div className="rounded-2xl border border-line bg-surface p-5">
           <div className="mb-5 flex flex-col items-center gap-2">
-            <PhotoPicker bucket="design-photos" workshopId={workshop?.id ?? ''} onUploaded={setPhotoPath} current={photoPath} rounded={false} size={104} />
+            <PhotoPicker
+              bucket="design-photos"
+              workshopId={workshop?.id ?? ''}
+              onUploaded={setPhotoPath}
+              current={photoPath}
+              rounded={false}
+              size={104}
+            />
             <p className="text-xs text-muted">{t.edit.changePhoto}</p>
           </div>
 
@@ -116,16 +158,28 @@ export default function EditDress() {
           <label className="mt-4 block text-sm font-medium text-ink">{t.worker.notes}</label>
           <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} className={field} />
 
-          <button onClick={save} disabled={!canSave || busy} className="mt-6 w-full rounded-lg bg-indigo py-3 text-base font-semibold text-white disabled:opacity-30">{busy ? t.worker.saving : t.edit.save}</button>
-          <button onClick={() => nav(-1)} className="mt-2 w-full py-2.5 text-sm font-medium text-muted">{t.edit.back}</button>
+          <button
+            onClick={save}
+            disabled={!canSave || busy}
+            className="mt-6 w-full rounded-lg bg-indigo py-3 text-base font-semibold text-white disabled:opacity-30"
+          >
+            {busy ? t.worker.saving : t.edit.save}
+          </button>
+
+          <button onClick={() => nav(-1)} className="mt-2 w-full py-2.5 text-sm font-medium text-muted">
+            {t.edit.back}
+          </button>
         </div>
 
         {error && <p className="mt-3 text-sm text-out">{error}</p>}
 
         <div className="mt-4 rounded-2xl border border-line bg-surface p-5">
           <p className="text-sm font-medium text-ink">{t.dress.lotsOf}</p>
+
           <ul className="mt-3 space-y-2">
-            {myLots.map((l) => <LotRow key={l.id} lot={l} />)}
+            {myLots.map((l) => (
+              <LotRow key={l.id} lot={l} isAdmin={myRole === 'admin'} />
+            ))}
           </ul>
         </div>
       </div>
