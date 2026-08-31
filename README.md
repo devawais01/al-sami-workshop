@@ -73,9 +73,11 @@ The brief was to replace it with something a non-technical user would actually r
 - Timestamp-bounded filtering, inclusive of both end dates
 
 ### Access control
-- Two roles: **admin**, who manages users, and **user**, who does everything else
+- Two roles: **admin**, who manages users and deletes records, and **user**, who does everything else
 - Admins provision accounts from inside the app via a server-side function
-- Non-admins cannot see or reach user management — enforced in the database, not merely hidden in the UI
+- Deleting a user removes both the membership and the underlying auth account, so no orphaned logins remain
+- Destructive actions are admin-only and gated behind an inline warning showing how many ledger records will be lost
+- Non-admins cannot see or reach user management or delete controls — enforced in the database, not merely hidden in the UI
 
 ### Platform
 - Installable to the home screen, opening full-screen with no browser chrome
@@ -137,10 +139,10 @@ All views are declared `security_invoker = on`. Without it, a view executes with
 The repository is public and the Supabase publishable key ships inside the client bundle, as designed. Row-level security is therefore the entire access boundary rather than a secondary measure.
 
 - RLS enabled on all six tables, with every policy resolving membership through `security definer` helper functions
-- Write policies additionally require an `admin` or `malik` role
+- Write access is split by command rather than granted wholesale: `insert` and `update` require `admin` or `malik`; `delete` requires `admin`
 - `workshop_member` is writable only by admins, and its read policy checks `auth.uid()` directly to avoid recursion
 - Storage policies validate that the first path segment matches the caller's workshop
-- Account creation runs exclusively inside an Edge Function holding the service role key, which verifies the caller is an admin before acting and rolls back the created user if membership assignment fails
+- Account creation and deletion run exclusively inside an Edge Function holding the service role key. It verifies the caller is an admin, refuses self-deletion and admin deletion, and rolls back a created user if membership assignment fails
 - The service role key exists only in Edge Function environment variables — never in the client, never in the repository
 
 Verified by querying as an unaffiliated user and confirming zero rows returned across every table.
@@ -195,7 +197,7 @@ Both values come from **Supabase → Connect**. Never add the service role key h
 
 ### Database
 
-Run the migrations in `supabase/migrations/` in order through the Supabase SQL Editor. This creates the tables, indexes, views, helper functions, RLS policies, and storage buckets.
+Run the files in `supabase/migrations/` in numerical order through the Supabase SQL Editor. See that folder's README for what each one does and how to verify the result.
 
 Then deploy the Edge Functions:
 
@@ -216,6 +218,8 @@ npm run preview  # serve the build — required to test PWA behaviour
 
 The service worker only runs in a production build. `npm run dev` also skips type errors that `npm run build` enforces, so always build before shipping.
 
+> Edge Functions run on Deno, not Node. Your editor will flag `Deno` globals and `https://esm.sh/` imports as errors unless the Deno extension is installed. They are excluded from `tsconfig.app.json` and do not affect the build.
+
 ---
 
 ## Operations
@@ -224,9 +228,23 @@ The service worker only runs in a production build. `npm run dev` also skips typ
 
 **Backups.** A GitHub Actions workflow runs `pg_dump` every Sunday at 02:00 UTC and uploads a gzipped artifact retained for 90 days. The workflow fails deliberately if the dump is under 2 KB or missing the `worker` table — a backup that reports success while containing nothing is worse than no backup at all.
 
-Backups are restore-verified: six tables, four views with security attributes intact, fourteen RLS policies, and all row data.
+Backups are restore-verified: six tables, four views with security attributes intact, RLS policies, and all row data.
 
 > **Note:** `pg_dump` covers the `public` schema only. Authentication accounts live in Supabase's `auth` schema and are not included. Recovery involves recreating admin accounts manually and re-running the membership inserts.
+
+---
+
+## Notes from the build
+
+Four things that cost real time and are worth recording.
+
+**The data model was inverted at first.** Lots were built as the parent owning designs. The client corrected it: a *dress* is the recurring entity and it owns many lots. Catching that before any screens were written against it saved a rewrite — the shape of the domain is worth arguing about early.
+
+**Date filtering against a timestamp column needs timestamps.** A bare `2026-08-30` is read as midnight, so a range ending on that date silently excludes the entire day. Both bounds are now built as explicit ISO timestamps.
+
+**An empty state and a failed request must never look identical.** A user with no workshop membership caused `.single()` to return a 406, which the client treated as "still loading" — producing a button that did nothing, with no error anywhere. Now it surfaces a message.
+
+**Files that have never been executed are documentation, not migrations.** The migration files were reconstructed after the fact and drifted from the live database: one helper function granted write access to `malik` only, so admins silently lost the ability to insert anything. Run migrations against a throwaway project to prove they work.
 
 ---
 
